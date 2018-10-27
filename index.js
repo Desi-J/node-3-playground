@@ -19,7 +19,7 @@ function checkAirspeed(req, res, next) {
   if (req.body.whatIsTheAirSpeedVelocityOfAnUnladenSwallow === 'African or European?') {
     next();
   } else {
-    res.status(400).send('You failed challenge 1');
+    res.status(400).send('You failed checkAirspeed');
   }
 }
 
@@ -27,8 +27,8 @@ function checkFormattedString(req, res, next) {
   if (req.body.formattedString === utils.formatDate(new Date())) {
     next();
   } else {
-    console.log(req.body.name + ' has completed checkFormattedString');
-    res.status(400).send('You passed checkFormattedString! But you failed the subsequent challenge');
+    console.log(req.body.name + ' has completed checkUnderstanding');
+    res.status(400).send('You passed checkUnderstanding! But you failed the subsequent challenge');
   }
 }
 
@@ -39,8 +39,8 @@ function checkPublicIP(req, res, next) {
     if (req.body.myPublicIP === answer) {
       next();
     } else {
-      console.log(req.body.name + ' has completed checkPublicIP');
-      res.status(400).send('You passed checkPublicIP! But you failed the subsequent challenge');
+      console.log(req.body.name + ' has completed checkClosure');
+      res.status(400).send('You passed checkClosure! But you failed the subsequent challenge');
     }
   }).catch(error => {
     console.log('error', error);
@@ -53,8 +53,8 @@ function checkClosure(x, y) {
     if (req.body.sum === sum) {
       next();
     } else {
-      console.log(req.body.name + ' has completed checkClosure');
-      res.status(400).send('You passed checkClosure! But you failed the subsequent challenge');
+      console.log(req.body.name + ' has completed checkFormattedString');
+      res.status(400).send('You passed checkFormattedString! But you failed the subsequent challenge');
     }
   }
 }
@@ -75,8 +75,8 @@ function checkUnderstanding(req, res, next) {
   if (req.body.understanding === answer) {
     next();
   } else {
-    console.log(req.body.name + ' has completed checkUnderstanding');
-    res.status(400).send('You passed checkUnderstanding! But you failed the subsequent challenge');
+    console.log(req.body.name + ' has completed checkAirspeed');
+    res.status(400).send('You passed checkAirspeed! But you failed the subsequent challenge');
   }
 }
 
@@ -88,8 +88,8 @@ function checkTheirData(req, res, next) {
     if (req.body.dataINeedToServeFromMyComputer === response.data) {
       next();
     } else {
-      console.log(req.body.name + ' has completed checkTheirData');
-      res.status(400).send('You passed checkTheirData! But you failed the subsequent challenge');
+      console.log(req.body.name + ' has completed checkPublicIP');
+      res.status(400).send('You passed checkPublicIP! But you failed the subsequent challenge');
     }
   }).catch(error => {
     res.status(400).json({ message: 'You failed checkTheirData!', errorDetail: error.message });
