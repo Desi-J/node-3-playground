@@ -9,5 +9,12 @@ module.exports = {
     if (day.length < 2) day = '0' + day;
 
     return [year, month, day].join('-');
+  },
+  getTheirIP(req) {
+    let theirIP = req.connection.remoteAddress;
+    if (theirIP.substr(0, 7) == "::ffff:") {
+      theirIP = theirIP.substr(7)
+    }
+    return theirIP;
   }
 };

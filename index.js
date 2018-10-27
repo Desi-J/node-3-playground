@@ -76,11 +76,28 @@ function checkUnderstanding(req, res, next) {
     next();
   } else {
     console.log(req.body.name + ' has completed checkUnderstanding');
-      res.status(400).send('You passed checkUnderstanding! But you failed the subsequent challenge');
+    res.status(400).send('You passed checkUnderstanding! But you failed the subsequent challenge');
   }
 }
 
-app.post('/challenge', checkAirspeed, checkUnderstanding, checkFormattedString, checkClosure(7, 11), checkPublicIP, (req, res) => {
+function checkTheirData(req, res, next) {
+  const theirIP = utils.getTheirIP(req)
+  const aPortOfMyChoosing = req.body.aPortOfMyChoosing;
+  // HINT: Don't use bodyparser!
+  axios.get(`http://${theirIP}:${aPortOfMyChoosing}/api/data`).then(response => {
+    if (req.body.dataINeedToServeFromMyComputer === response.data) {
+      next();
+    } else {
+      console.log(req.body.name + ' has completed checkTheirData');
+      res.status(400).send('You passed checkTheirData! But you failed the subsequent challenge');
+    }
+  }).catch(error => {
+    res.status(400).json({ message: 'You failed checkTheirData!', errorDetail: error.message });
+  })
+}
+
+
+app.post('/challenge', checkAirspeed, checkUnderstanding, checkFormattedString, checkClosure(7, 11), checkPublicIP, checkTheirData, (req, res) => {
   console.log(req.body.name + ' has completed all challenges!');
   res.json({
     message: 'You did it!',
