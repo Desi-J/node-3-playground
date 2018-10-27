@@ -47,6 +47,18 @@ function checkPublicIP(req, res, next) {
   })
 }
 
+function checkClosure(x, y) {
+  const sum = x + y;
+  return function(req, res, next) {
+    if (req.body.sum === sum) {
+      next();
+    } else {
+      console.log(req.body.name + ' has completed checkClosure');
+      res.status(400).send('You passed checkClosure! But you failed the subsequent challenge');
+    }
+  }
+}
+
 function checkUnderstanding(req, res, next) {
   const answer = [{
     employeedId: 1,
@@ -68,7 +80,7 @@ function checkUnderstanding(req, res, next) {
   }
 }
 
-app.post('/challenge', checkAirspeed, checkUnderstanding, checkFormattedString, checkPublicIP, (req, res) => {
+app.post('/challenge', checkAirspeed, checkUnderstanding, checkFormattedString, checkClosure(7, 11), checkPublicIP, (req, res) => {
   console.log(req.body.name + ' has completed all challenges!');
   res.json({
     message: 'You did it!',
