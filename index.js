@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('./body-parser');
 const axios = require('axios');
 const values = require('./values');
+const utils = require('./utils');
 
 const app = express();
 
@@ -14,37 +15,60 @@ app.use((req, res, next) => {
   next();
 });
 
-function security1(req, res, next) {
-  if (req.body.security1 === 9 * 9) {
+function checkAirspeed(req, res, next) {
+  if (req.body.whatIsTheAirSpeedVelocityOfAnUnladenSwallow === 'African or European?') {
     next();
   } else {
     res.status(400).send('You failed challenge 1');
   }
 }
 
-function legPressCheck(req, res, next) {
-  if (req.body.howManyLegPressesCanTylerDo === values.howManyLegPressesCanTylerDo) {
+function checkFormattedString(req, res, next) {
+  if (req.body.formattedString === utils.formatDate(new Date())) {
     next();
   } else {
-    console.log(req.body.name + ' has completed challenge 2');
-    res.status(400).send('You passed challenge 2! But you failed challenge 3');
+    console.log(req.body.name + ' has completed checkFormattedString');
+    res.status(400).send('You passed checkFormattedString! But you failed the subsequent challenge');
   }
 }
 
-function awesomenessCheck(req, res, next) {
-  axios.post(`http://localhost:${port}/who`, { name: req.body.name }).then(response => {
-    if (req.body.whoIsAwesome === response.data) {
+function checkPublicIP(req, res, next) {
+  axios.get(`http://icanhazip.com`).then(response => {
+    // Remove trailing newline character
+    const answer = response.data.slice(0, -1);
+    if (req.body.myPublicIP === answer) {
       next();
     } else {
-      console.log(req.body.name + ' has completed challenge 3');
-      res.status(400).send('You passed challenge 3! But you failed challenge 4');
+      console.log(req.body.name + ' has completed checkPublicIP');
+      res.status(400).send('You passed checkPublicIP! But you failed the subsequent challenge');
     }
   }).catch(error => {
     console.log('error', error);
   })
 }
 
-app.post('/challenge', security1, cityCheck, legPressCheck, awesomenessCheck, (req, res) => {
+function checkUnderstanding(req, res, next) {
+  const answer = [{
+    employeedId: 1,
+    salary: 60000
+  }, {
+    employeedId: 2,
+    salary: 61000
+  }, {
+    employeedId: 3,
+    salary: 62000
+  }].filter(e => e.salary > 60000).map(e => e.salary).reduce((avg, v, i, a) => {
+    return avg + v / a.length
+  }, 0);
+  if (req.body.understanding === answer) {
+    next();
+  } else {
+    console.log(req.body.name + ' has completed checkUnderstanding');
+      res.status(400).send('You passed checkUnderstanding! But you failed the subsequent challenge');
+  }
+}
+
+app.post('/challenge', checkAirspeed, checkUnderstanding, checkFormattedString, checkPublicIP, (req, res) => {
   console.log(req.body.name + ' has completed all challenges!');
   res.json({
     message: 'You did it!',
@@ -60,12 +84,3 @@ const port = 3005;
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });
-
-function cityCheck(req, res, next) {
-  if (req.query.cool_city === 'phoenix') {
-    next();
-  } else {
-    console.log(req.body.name + ' has completed challenge 1');
-    res.status(400).send('You passed challenge 1! But you failed challenge 2');
-  }
-}
