@@ -13,6 +13,10 @@ app.use((req, res, next) => {
   }
   next();
 });
+app.use(function(req, res, next) {
+  req.someValueForLater = req.body.didYouFigureItOut === true;
+  next();
+})
 
 function security1(req, res, next) {
   if (req.body.security1 === 9 * 9) {
@@ -36,15 +40,33 @@ function awesomenessCheck(req, res, next) {
     if (req.body.whoIsAwesome === response.data) {
       next();
     } else {
-      console.log(req.body.name + ' has completed challenge 3');
-      res.status(400).send('You passed challenge 3! But you failed challenge 4');
+      console.log(req.body.name + ' has completed challenge 5');
+      res.status(400).send('You passed challenge 5! But you failed challenge 6');
     }
   }).catch(error => {
     console.log('error', error);
   })
 }
 
-app.post('/challenge', security1, cityCheck, legPressCheck, awesomenessCheck, (req, res) => {
+const reqCheck = (req, res, next) => {
+  if (req.someValueForLater) {
+    next();
+  } else {
+    console.log(req.body.name + ' has completed challenge 4');
+    res.status(400).send('You passed challenge 4! But you failed challenge 5');
+  }
+}
+
+function headerCheck(req, res, next) {
+  if (req.headers.myarbitraryheader === 'woohoo') {
+    next();
+  } else {
+    console.log(req.body.name + ' has completed challenge 3');
+    res.status(400).send('You passed challenge 3! But you failed challenge 4');
+  }
+}
+
+app.post('/challenge', security1, cityCheck, legPressCheck, headerCheck, reqCheck, awesomenessCheck, (req, res) => {
   console.log(req.body.name + ' has completed all challenges!');
   res.json({
     message: 'You did it!',
